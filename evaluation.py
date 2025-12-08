@@ -4,6 +4,9 @@
 #   python evaluation.py image.jpg --type protan
 #   python evaluation.py image.jpg --type deutan --intensity 1.2
 
+# evaluation.py
+# 정적 이미지(image.jpg)를 이용해 Daltonization 성능을 정량 평가하는 스크립트
+
 import numpy as np
 import cv2
 from skimage import color
@@ -12,21 +15,49 @@ from algorithm import apply_daltonization
 
 
 def compute_deltaE(sim_off: np.ndarray, sim_on: np.ndarray) -> float:
+    ...
+    # (사용자 코드 그대로, 생략 가능)
+    ...
+
+
+def compute_hist_kl(sim_off: np.ndarray, sim_on: np.ndarray):
+    ...
+    # (사용자 코드 그대로, 생략 가능)
+    ...
+
+
+def compute_contrast(gray: np.ndarray) -> float:
+    ...
+    # (사용자 코드 그대로, 생략 가능)
+    ...
+
+
+def evaluate_image(image_path: str, cb_type: str = "protan", intensity: float = 1.0):
     """
-    CIEDE2000 ΔE 평균값 계산
-    sim_off: 보정 전 색맹 시뮬레이션 이미지 (H, W, 3, uint8, RGB)
-    sim_on : 보정 후 색맹 시뮬레이션 이미지 (H, W, 3, uint8, RGB)
+    한 장의 이미지에 대해 3가지 정량 지표를 계산한다.
+
+    cb_type   : "protan" (제1 적록색맹) 또는 "deutan" (제2 적록색맹)
+    intensity : 보정 강도
     """
-    off = sim_off.astype(np.float32) / 255.0
-    on = sim_on.astype(np.float32) / 255.0
+    # 1) 이미지 로드 (BGR) → RGB 변환
+    bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)
+    if bgr is None:
+        raise FileNotFoundError(f"이미지를 찾을 수 없습니다: {image_path}")
 
-    lab_off = color.rgb2lab(off)
-    lab_on = color.rgb2lab(on)
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    # skimage 0.19+ 기준 함수명
-    deltaE = color.deltaE_ciede2000(lab_off, lab_on)
+    # 2) Daltonization 적용 (보정 전/후 시뮬레이션)
+    sim_off, sim_on = apply_daltonization(
+        rgb,
+        cb_type=cb_type,
+        intensity=intensity
+    )
 
-    return float(deltaE.mean())
+    # 아래는 기존 코드 그대로...
+    mean_deltaE = compute_deltaE(sim_off, sim_on)
+    gray_off = cv2.cvtColor(sim_off, cv2.COLOR_RGB2GRAY)
+    gray_on = cv2.cvtColor(sim_on, cv2.COLOR_RGB2GRAY)
+    ...
 
 
 def compute_hist_kl(sim_off: np.ndarray, sim_on: np.ndarray):
@@ -142,7 +173,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--intensity",
-        type=float,
+        type=float,  
         default=1.0,
         help="보정 강도 (기본값=1.0)",
     )
