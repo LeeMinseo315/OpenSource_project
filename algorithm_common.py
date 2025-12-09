@@ -9,11 +9,9 @@ M_RGB2LMS = np.array([
 
 M_LMS2RGB = np.linalg.inv(M_RGB2LMS)
 
+# 공통 로직
 def simulate_cvd_core(rgb_img: np.ndarray, sim_matrix: np.ndarray) -> np.ndarray:
-    """
-    공통 시뮬레이션 로직
-    어떤 시뮬레이션 행렬(sim_matrix)이 들어오든 계산해주는 함수
-    """
+
     img_float = rgb_img.astype(np.float32)
 
     # 1. RGB -> LMS

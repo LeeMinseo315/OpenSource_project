@@ -12,7 +12,7 @@ def apply_daltonization(
 ):
     """
     Daltonization 메인 함수
-    cb_type에 따라 적절한 모듈(protan/deutan)을 호출합니다.
+    cb_type에 따라 적절한 모듈(protan/deutan)을 호출
     """
     
     # 1. 타입에 따른 설정 분기

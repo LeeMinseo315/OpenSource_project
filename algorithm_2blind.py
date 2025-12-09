@@ -10,7 +10,7 @@ M_SIM_DEUTAN = np.array([
 
 def get_deutan_params():
     """
-    [디벨롭 포인트]
+    디벨롭 포인트
     제2색맹용 최적 파라미터 반환
     실험 결과: alpha_g=0.5, alpha_b=0.9
     """
