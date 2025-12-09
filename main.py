@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         control_layout.addSpacing(20)
 
         # --- 컨트롤 UI ---
-        self.btn_toggle = QPushButton("솔루션 적용하기 (Apply Solution)")
+        self.btn_toggle = QPushButton("보정 켜기")
         self.btn_toggle.setCheckable(True)
         self.btn_toggle.setMinimumHeight(60)
         self.btn_toggle.clicked.connect(self.toggle_mode)

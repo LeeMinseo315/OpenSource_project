@@ -3,6 +3,7 @@
 
 import numpy as np
 import cv2
+import os  # [추가] 경로 설정을 위해 필요
 from skimage import color
 from scipy.stats import entropy
 import matplotlib.pyplot as plt
@@ -122,6 +123,19 @@ def plot_graphs(image_path: str, cb_type: str):
         contrasts.append(result["contrast_improve_pct"])
         kl_vals.append(result["kl_on_off"])
 
+    # ▼▼▼ [수정된 부분: 저장 경로 및 파일명 설정] ▼▼▼
+    # 저장할 폴더 경로 (요청하신 절대 경로)
+    save_dir = "/Users/yueun/Desktop/OpensourcePj/OpenSource_project/그래프"
+    
+    # 폴더가 없으면 생성
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+        print(f"폴더 생성됨: {save_dir}")
+
+    # 파일명 접미사
+    suffix = "_2blind"
+    # ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
     # ΔE 그래프
     plt.figure(figsize=(7, 5))
     plt.plot(intensities, deltaEs, marker="o")
@@ -129,7 +143,7 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("ΔE2000")
     plt.grid(True)
-    plt.savefig("plot_deltaE.png", dpi=200)
+    plt.savefig(os.path.join(save_dir, f"plot_deltaE{suffix}.png"), dpi=200) # 경로 수정
 
     # Contrast 변화 그래프
     plt.figure(figsize=(7, 5))
@@ -138,7 +152,7 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("Contrast Change (%)")
     plt.grid(True)
-    plt.savefig("plot_contrast.png", dpi=200)
+    plt.savefig(os.path.join(save_dir, f"plot_contrast{suffix}.png"), dpi=200) # 경로 수정
 
     # KL Divergence 그래프
     plt.figure(figsize=(7, 5))
@@ -147,9 +161,9 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("KL Divergence")
     plt.grid(True)
-    plt.savefig("plot_kl.png", dpi=200)
+    plt.savefig(os.path.join(save_dir, f"plot_kl{suffix}.png"), dpi=200) # 경로 수정
 
-    print("그래프 3종 생성 완료: plot_deltaE.png / plot_contrast.png / plot_kl.png")
+    print(f"그래프 3종 생성 완료: {save_dir} 폴더에 *_2blind.png 로 저장되었습니다.")
 
 
 # -------------------------------------------------------
