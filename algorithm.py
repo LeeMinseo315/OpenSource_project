@@ -1,101 +1,59 @@
 import numpy as np
-
-# RGB → LMS 변환 행렬
-M_RGB2LMS = np.array([
-    [17.8824, 43.5161, 4.11935],
-    [3.45565, 27.1554, 3.86714],
-    [0.0299566, 0.184309, 1.46709]
-]).T
-
-# LMS → RGB 역행렬
-M_LMS2RGB = np.linalg.inv(M_RGB2LMS)
-
-# Protanopia(제1 적록색맹) 시뮬레이션 행렬
-M_SIM_PROTAN = np.array([
-    [0.0,      2.02344,  -2.52581],
-    [0.0,      1.0,       0.0],
-    [0.0,      0.0,       1.0]
-]).T
-
-# Deuteranopia(제2 적록색맹) 시뮬레이션 행렬
-M_SIM_DEUTAN = np.array([
-    [1.0,      0.0,       0.0],
-    [0.494207, 0.0,       1.24827],
-    [0.0,      0.0,       1.0]
-]).T
-
-
-def _simulate_cvd(rgb_img: np.ndarray, cb_type: str) -> np.ndarray:
-    """
-    색각 유형에 따라 CVD 시뮬레이션 (Protan / Deutan)
-    rgb_img: (H, W, 3), uint8, RGB
-    """
-    img_float = rgb_img.astype(np.float32)
-
-    # RGB → LMS
-    lms = np.dot(img_float, M_RGB2LMS)
-
-    # 유형 선택
-    if cb_type == "protan":
-        M_SIM = M_SIM_PROTAN
-    elif cb_type == "deutan":
-        M_SIM = M_SIM_DEUTAN
-    else:
-        raise ValueError(f"지원하지 않는 cb_type: {cb_type}")
-
-    # LMS에서 색각 이상 시뮬레이션
-    lms_sim = np.dot(lms, M_SIM)
-
-    # LMS → RGB
-    rgb_sim = np.dot(lms_sim, M_LMS2RGB)
-    rgb_sim_uint8 = np.clip(rgb_sim, 0, 255).astype(np.uint8)
-    return rgb_sim_uint8
-
+# 분리한 파일들 불러오기
+import algorithm_1blind as protan
+import algorithm_2blind as deutan
 
 def apply_daltonization(
     img: np.ndarray,
     cb_type: str = "deutan",
     intensity: float = 1.0,
-    alpha_g: float = 0.9, # 함수 호출 시 넘어오는 기본값 사용
-    alpha_b: float = 0.7, # 함수 호출 시 넘어오는 기본값 사용
+    alpha_g: float = 0.9,
+    alpha_b: float = 0.7,
 ):
     """
-    Daltonization 적용 함수
+    Daltonization 메인 함수
+    cb_type에 따라 적절한 모듈(protan/deutan)을 호출합니다.
     """
     
-    # 1) 보정 전 시뮬레이션 (OFF 화면)
-    sim_off = _simulate_cvd(img, cb_type=cb_type)
+    # 1. 타입에 따른 설정 분기
+    if cb_type == "protan":
+        # 제1색맹: 시뮬레이션 함수 & 파라미터 가져오기
+        sim_off = protan.simulate_protan(img)
+        final_g, final_b = protan.get_protan_params(alpha_g, alpha_b)
+        
+    elif cb_type == "deutan":
+        # 제2색맹: 시뮬레이션 함수 & 최적 파라미터 가져오기
+        sim_off = deutan.simulate_deutan(img)
+        final_g, final_b = deutan.get_deutan_params() # 0.5, 0.9가 옴
+        
+    else:
+        # 예외 처리 (기본은 deutan으로)
+        sim_off = deutan.simulate_deutan(img)
+        final_g, final_b = alpha_g, alpha_b
 
+    # 2. 공통 보정 로직 (계산은 여기서 수행)
     img_f = img.astype(np.float32)
     sim_f = sim_off.astype(np.float32)
-
-    # 2) 에러 계산 (원본 - 시뮬레이션)
+    
+    # 에러 계산
     error = img_f - sim_f
 
-    # ▼▼▼ [수정됨] 제2색맹(Deutan)만 최적값 적용 / 제1색맹은 건드리지 않음 ▼▼▼
-    if cb_type == "deutan":
-        # 실험을 통해 얻은 제2색맹 최적값
-        alpha_g = 0.5
-        alpha_b = 0.9
-    
-    # (참고) cb_type == "protan"일 때는 위에서 받은 인자(alpha_g, alpha_b)를 그대로 사용함
-
-
-    # 3) M_SHIFT 생성
+    # M_SHIFT 생성 (위에서 결정된 final_g, final_b 사용)
     M_SHIFT = np.array([
         [0.0,      0.0, 0.0],
-        [alpha_g,  1.0, 0.0],
-        [alpha_b,  0.0, 1.0]
+        [final_g,  1.0, 0.0],
+        [final_b,  0.0, 1.0]
     ]).T
 
-    # 에러를 다른 채널로 옮겨 싣기
+    # 보정 적용
     correction = np.dot(error, M_SHIFT) * intensity
-
-    # 4) 보정된 RGB (정상인이 보는 화면)
     corr_rgb_f = img_f + correction
     corr_rgb = np.clip(corr_rgb_f, 0, 255).astype(np.uint8)
 
-    # 5) 보정된 RGB를 다시 색각이상자가 봤을 때 시뮬레이션 (ON 화면)
-    sim_on = _simulate_cvd(corr_rgb, cb_type=cb_type)
+    # 3. ON 화면 시뮬레이션 (결과 확인용)
+    if cb_type == "protan":
+        sim_on = protan.simulate_protan(corr_rgb)
+    else:
+        sim_on = deutan.simulate_deutan(corr_rgb)
 
     return sim_off, sim_on
