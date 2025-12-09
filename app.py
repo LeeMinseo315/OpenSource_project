@@ -36,12 +36,12 @@ with st.sidebar:
     # 보기 모드 (공통)
     view_mode = st.radio(
         "오른쪽 화면 모드",
-        ("⛔ 문제 상황 보기 (Simulation)", "✅ 해결책 보기 (Correction)")
+        ("OFF (적록색맹 시점)", "ON (보정 후)")
     )
-    is_correction_mode = True if "해결책" in view_mode else False
+    is_correction_mode = True if "ON" in view_mode else False
 
 # --- [3] 메인 타이틀 ---
-st.title("🎨 색각 보정 유니버설 웹 서비스")
+st.title(" 적록색맹을 위한 실시간 색각 보정 시스템 ")
 st.markdown(f"현재 모드: **{app_mode}**")
 st.divider()
 
@@ -63,14 +63,14 @@ if app_mode == "📁 이미지 파일 업로드":
         # 화면 배치 (2단 컬럼)
         col1, col2 = st.columns(2)
         with col1:
-            st.subheader("👁️ 원본 (Normal Vision)")
+            st.subheader(" 원본 ")
             st.image(img_array, use_container_width=True)
         with col2:
             if not is_correction_mode:
-                st.subheader(f"🔒 {type_option} 시각 (Before)")
+                st.subheader(f" {type_option} 시각 (Before)")
                 st.image(sim_off, use_container_width=True)
             else:
-                st.subheader(f"🔑 보정된 시각 (After)")
+                st.subheader(f" 보정된 시각 (After)")
                 st.image(sim_on, use_container_width=True)
 
 # ==========================================
