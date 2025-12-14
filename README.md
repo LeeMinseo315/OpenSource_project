@@ -11,7 +11,6 @@ daltonize 오픈소스 프로젝트의 구조와 아이디어를 참고하였으
 https://github.com/joergdietrich/daltonize
 
 licenses
-Numpy - BSD License
 OpenCV - Apache License 2.0
 Streamlit - Apache License 2.0
 PyQt6 - GPL v3 (상업적인 용도가 아닌 교육적인 목적으로 사용되었습니다.)
