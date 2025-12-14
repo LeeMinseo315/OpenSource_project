@@ -15,3 +15,6 @@ OpenCV - Apache License 2.0
 Streamlit - Apache License 2.0
 PyQt6 - GPL v3 (상업적인 용도가 아닌 교육적인 목적으로 사용되었습니다.)
 daltonize(reference) - GNU GPL v2 (코드가 직접적으로 사용되지 않았습니다.)
+
+
+파이썬 버전 및 실행 방법은 run.txt 파일을 참고해주세요.
