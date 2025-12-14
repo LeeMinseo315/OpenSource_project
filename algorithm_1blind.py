@@ -9,10 +9,6 @@ M_SIM_PROTAN = np.array([
 ]).T
 
 def get_protan_params(input_alpha_g, input_alpha_b):
-    """
-    제1색맹용 파라미터 결정 로직
-    - 특별한 튜닝 없이 입력값 그대로 사용 (사용자 요청 반영)
-    """
     return input_alpha_g, input_alpha_b
 
 def simulate_protan(img):

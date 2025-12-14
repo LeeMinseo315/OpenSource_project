@@ -74,6 +74,7 @@ def evaluate_image(
         alpha_g=alpha_g,
         alpha_b=alpha_b,
     )
+    
 
     # 1) ΔE2000
     mean_deltaE = compute_deltaE(sim_off, sim_on)

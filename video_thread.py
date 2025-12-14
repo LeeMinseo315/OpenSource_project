@@ -9,11 +9,13 @@ class VideoThread(QThread):
     def __init__(self):
         super().__init__()
         self._run_flag = True
-        self.mode = False          # False: OFF(문제 상황), True: ON(보정 후)
-        self.cb_type = "protan"    # "protan" or "deutan"
+        self.mode = False          # False: OFF, True: ON
+        self.cb_type = "protan"    # "protan" 이나 "deutan"
 
     def run(self):
         cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         while self._run_flag:
             ret, frame = cap.read()
             if not ret:
@@ -22,7 +24,7 @@ class VideoThread(QThread):
             # OpenCV는 BGR이므로 RGB로 변환
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # 정상 시각(왼쪽)은 그냥 원본
+            # 정상 시각(왼쪽)은 원본
             left_img = frame_rgb
 
             # 색각 시뮬레이션 + 보정

@@ -1,9 +1,0 @@
-source opsowvenv/bin/activate
-python main.py
-
-
-
-- 오픈소스
-1. open-cv ; Apache 2.0
-2. numpy ; BSD 3-Clause
-3. PyQt6 ; GPL v3
