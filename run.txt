@@ -1,0 +1,24 @@
+파이썬 버전
+python 3.9
+
+필수 라이브러리 및 라이브러리 버전
+numpy
+opencv-python
+streamlit
+streamlit-webrtc
+PyQt6
+Pillow
+
+분석코드 라이브러리
+scikit-image
+scipy
+matplotlib
+
+라이브러리 설치
+pip install numpy opencv-python streamlit streamlit-webrtc PyQt6 Pillow scikit-image scipy matplotlib
+
+실행방법
+1. 웹캠
+python main.py
+2. 웹(streamlit)
+streamlit run app.py
