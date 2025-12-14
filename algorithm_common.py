@@ -1,6 +1,6 @@
 import numpy as np
 
-# [공통] RGB ↔ LMS 변환 행렬
+# RGB ↔ LMS 변환 행렬
 M_RGB2LMS = np.array([
     [17.8824, 43.5161, 4.11935],
     [3.45565, 27.1554, 3.86714],
@@ -14,14 +14,14 @@ def simulate_cvd_core(rgb_img: np.ndarray, sim_matrix: np.ndarray) -> np.ndarray
 
     img_float = rgb_img.astype(np.float32)
 
-    # 1. RGB -> LMS
+    # RGB -> LMS
     lms = np.dot(img_float, M_RGB2LMS)
     
-    # 2. LMS 변조 (들어온 행렬 적용)
+    # LMS 변조
     lms_sim = np.dot(lms, sim_matrix)
     
-    # 3. LMS -> RGB
+    # LMS -> RGB
     rgb_sim = np.dot(lms_sim, M_LMS2RGB)
     
-    # 4. 정리 (Clipping)
+    # Clipping
     return np.clip(rgb_sim, 0, 255).astype(np.uint8)

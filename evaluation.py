@@ -10,9 +10,7 @@ import matplotlib.pyplot as plt
 from algorithm import apply_daltonization
 
 
-# -------------------------------------------------------
 # 1. ΔE2000 계산
-# -------------------------------------------------------
 def compute_deltaE(sim_off: np.ndarray, sim_on: np.ndarray) -> float:
     off = sim_off.astype(np.float32) / 255.0
     on = sim_on.astype(np.float32) / 255.0
@@ -24,9 +22,8 @@ def compute_deltaE(sim_off: np.ndarray, sim_on: np.ndarray) -> float:
     return float(deltaE.mean())
 
 
-# -------------------------------------------------------
+
 # 2. KL Divergence 계산
-# -------------------------------------------------------
 def compute_hist_kl(sim_off: np.ndarray, sim_on: np.ndarray):
     gray_off = cv2.cvtColor(sim_off, cv2.COLOR_RGB2GRAY)
     gray_on = cv2.cvtColor(sim_on, cv2.COLOR_RGB2GRAY)
@@ -38,22 +35,19 @@ def compute_hist_kl(sim_off: np.ndarray, sim_on: np.ndarray):
     hist_off += eps
     hist_on += eps
 
-    kl_on_off = float(entropy(hist_on, hist_off))   # KL(sim_on || sim_off)
-    kl_off_on = float(entropy(hist_off, hist_on))   # KL(sim_off || sim_on)
+    kl_on_off = float(entropy(hist_on, hist_off))   
+    kl_off_on = float(entropy(hist_off, hist_on))   
 
     return kl_on_off, kl_off_on
 
 
-# -------------------------------------------------------
 # 3. 대비(표준편차)
-# -------------------------------------------------------
 def compute_contrast(gray: np.ndarray) -> float:
     return float(gray.std())
 
 
-# -------------------------------------------------------
-# 4. 단일 강도(intensity)의 평가 실행
-# -------------------------------------------------------
+
+# 4. intensity의 평가 실행
 def evaluate_image(
     image_path: str,
     cb_type: str = "deutan",
@@ -107,9 +101,7 @@ def evaluate_image(
     }
 
 
-# -------------------------------------------------------
-# 5. 그래프 생성 기능 (Intensity Range 평가)
-# -------------------------------------------------------
+# 5. 그래프 생성
 def plot_graphs(image_path: str, cb_type: str):
     intensities = np.linspace(0.2, 1.2, 9)
 
@@ -123,8 +115,6 @@ def plot_graphs(image_path: str, cb_type: str):
         contrasts.append(result["contrast_improve_pct"])
         kl_vals.append(result["kl_on_off"])
 
-    # ▼▼▼ [수정된 부분: 저장 경로 및 파일명 설정] ▼▼▼
-    # 저장할 폴더 경로 (요청하신 절대 경로)
     save_dir = "/Users/yueun/Desktop/OpensourcePj/OpenSource_project/그래프"
     
     # 폴더가 없으면 생성
@@ -134,7 +124,6 @@ def plot_graphs(image_path: str, cb_type: str):
 
     # 파일명 접미사
     suffix = "_2blind"
-    # ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     # ΔE 그래프
     plt.figure(figsize=(7, 5))
@@ -143,7 +132,7 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("ΔE2000")
     plt.grid(True)
-    plt.savefig(os.path.join(save_dir, f"plot_deltaE{suffix}.png"), dpi=200) # 경로 수정
+    plt.savefig(os.path.join(save_dir, f"plot_deltaE{suffix}.png"), dpi=200) 
 
     # Contrast 변화 그래프
     plt.figure(figsize=(7, 5))
@@ -152,7 +141,7 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("Contrast Change (%)")
     plt.grid(True)
-    plt.savefig(os.path.join(save_dir, f"plot_contrast{suffix}.png"), dpi=200) # 경로 수정
+    plt.savefig(os.path.join(save_dir, f"plot_contrast{suffix}.png"), dpi=200) 
 
     # KL Divergence 그래프
     plt.figure(figsize=(7, 5))
@@ -161,14 +150,13 @@ def plot_graphs(image_path: str, cb_type: str):
     plt.xlabel("Intensity")
     plt.ylabel("KL Divergence")
     plt.grid(True)
-    plt.savefig(os.path.join(save_dir, f"plot_kl{suffix}.png"), dpi=200) # 경로 수정
+    plt.savefig(os.path.join(save_dir, f"plot_kl{suffix}.png"), dpi=200) 
 
     print(f"그래프 3종 생성 완료: {save_dir} 폴더에 *_2blind.png 로 저장되었습니다.")
 
 
-# -------------------------------------------------------
+
 # 6. M_SHIFT 튜닝 (alpha_g, alpha_b grid search)
-# -------------------------------------------------------
 def tune_shift(image_path: str, cb_type: str = "deutan", intensity: float = 1.0):
     alpha_candidates = [0.3, 0.5, 0.7, 0.9]
 
@@ -193,9 +181,7 @@ def tune_shift(image_path: str, cb_type: str = "deutan", intensity: float = 1.0)
             )
 
 
-# -------------------------------------------------------
-# 7. 콘솔 예쁘게 출력
-# -------------------------------------------------------
+
 def pretty_print_result(image_path: str, result: dict):
     cb_kor = "제1 적록색맹" if result["cb_type"] == "protan" else "제2 적록색맹"
 
@@ -217,9 +203,7 @@ def pretty_print_result(image_path: str, result: dict):
     print("==============================================\n")
 
 
-# -------------------------------------------------------
-# 8. main 실행부
-# -------------------------------------------------------
+# 7. main 실행부
 if __name__ == "__main__":
     import argparse
 
@@ -227,7 +211,7 @@ if __name__ == "__main__":
         description="Daltonization 정량 평가 + 그래프 자동 생성"
     )
 
-    parser.add_argument("image_path", help="입력 이미지 경로 (예: samples/img.jpg)")
+    parser.add_argument("image_path", help="입력 이미지 경로")
     parser.add_argument(
         "--type",
         choices=["protan", "deutan"],
@@ -253,7 +237,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # --- 단일 intensity 평가 ---
+    # 단일 intensity 평가
     res = evaluate_image(
         args.image_path,
         cb_type=args.type,
@@ -261,10 +245,10 @@ if __name__ == "__main__":
     )
     pretty_print_result(args.image_path, res)
 
-    # --- 그래프 생성 ---
+    # 그래프 생성 
     if args.graph:
         plot_graphs(args.image_path, cb_type=args.type)
 
-    # --- M_SHIFT 튜닝 ---
+    # M_SHIFT 튜닝
     if args.tune_shift:
         tune_shift(args.image_path, cb_type=args.type, intensity=args.intensity)
