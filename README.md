@@ -18,4 +18,4 @@ daltonize(reference) - GNU GPL v2 (코드가 직접적으로 사용되지 않았
 
 
 
-* 파이썬 버전 및 실행 방법은 run.txt 파일을 참고해주세요.
+\* 파이썬 버전 및 실행 방법은 run.txt 파일을 참고해주세요.
