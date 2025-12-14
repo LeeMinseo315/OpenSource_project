@@ -14,5 +14,6 @@ licenses
 Numpy - BSD License
 OpenCV - Apache License 2.0
 Streamlit - Apache License 2.0
+Pillow - HPND License (MIT style)
 PyQt6 - GPL v3 (상업적인 용도가 아닌 교육적인 목적으로 사용되었습니다.)
 daltonize(reference) - GNU GPL v2 (코드가 직접적으로 사용되지 않았습니다.)
